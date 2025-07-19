@@ -19,7 +19,20 @@ Whether you're experimenting with conversational AI or building something produc
 
 ## 📂 Project Structure
 
-ai-chatbot/ ├── client/            # Frontend (React + Vite) │   ├── public/ │   └── src/ │       ├── assets/ │       ├── components/ │       ├── App.jsx │       └── ... ├── server/            # Backend (Node.js + Express) │   ├── server.js │   ├── routes/ │   ├── controllers/ │   └── ... └── .env               # Environment variables (keep this secure)
+ai-chatbot/ 
+├── client/            # Frontend (React + Vite) │  
+├── public/ │  
+└── src/ │       
+├── assets/ │      
+├── components/ │      
+├── App.jsx │      
+└── ... 
+├── server/            # Backend (Node.js + Express) │   
+├── server.js │  
+├── routes/ │   
+├── controllers/ │  
+└── ...
+└── .env               # Environment variables (keep this secure)
 
 ---
 
