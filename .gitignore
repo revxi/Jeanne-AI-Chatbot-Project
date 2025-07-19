@@ -1,0 +1,40 @@
+# Node modules (both frontend and backend)
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build output
+dist/
+build/
+client/dist/
+server/build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+client/.env
+server/.env
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs/editors
+.vscode/
+.idea/
+
+# Vercel / Netlify / Render
+.vercel/
+.netlify/
+render.yaml
+
+# Misc
+*.log
+*.cache
+*.tgz
