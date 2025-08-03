@@ -1,0 +1,27 @@
+{
+  "name": "jeanne-ai-chatbot",
+  "version": "1.0.0",
+  "description": "AI Chatbot application with React frontend and Node.js backend",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "server:start": "cd server && npm start",
+    "client:build": "cd client && npm run build",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "chatbot",
+    "ai",
+    "react",
+    "nodejs",
+    "openai"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

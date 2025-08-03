@@ -1,4 +1,3 @@
-
 .app {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -30,11 +29,5 @@
   color: gray;
 }
 .input-area {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-input {
-  width: 300px;
-  padding: 10px;
+  margin-top: 1rem;
 }
