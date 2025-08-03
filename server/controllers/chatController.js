@@ -4,6 +4,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+
 const chatController = {
   async sendMessage(req, res) {
     const { message, role } = req.body;

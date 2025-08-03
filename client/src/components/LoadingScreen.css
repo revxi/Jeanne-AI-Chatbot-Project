@@ -1,0 +1,351 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-in;
+  font-family: 'Poppins', sans-serif;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+  animation: slideUp 0.8s ease-out;
+}
+
+/* Robot Logo Styles */
+.robot-logo {
+  margin-bottom: 2rem;
+  display: inline-block;
+  animation: robotFloat 3s ease-in-out infinite;
+}
+
+.robot-head {
+  width: 120px;
+  height: 100px;
+  background: linear-gradient(145deg, #2d3748, #4a5568);
+  border-radius: 20px;
+  position: relative;
+  margin: 0 auto 10px;
+  border: 3px solid #667eea;
+  box-shadow: 
+    0 0 20px rgba(102, 126, 234, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  animation: robotGlow 2s ease-in-out infinite alternate;
+}
+
+.robot-eye {
+  width: 20px;
+  height: 20px;
+  background: #00ff88;
+  border-radius: 50%;
+  position: absolute;
+  top: 25px;
+  box-shadow: 0 0 15px #00ff88;
+  animation: eyeBlink 2s ease-in-out infinite;
+}
+
+.robot-eye.left-eye {
+  left: 25px;
+}
+
+.robot-eye.right-eye {
+  right: 25px;
+}
+
+.robot-mouth {
+  width: 40px;
+  height: 8px;
+  background: #ff6b6b;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px #ff6b6b;
+  animation: mouthTalk 1s ease-in-out infinite;
+}
+
+.robot-antenna {
+  width: 4px;
+  height: 25px;
+  background: #667eea;
+  position: absolute;
+  top: -20px;
+  border-radius: 2px;
+  box-shadow: 0 0 8px #667eea;
+}
+
+.robot-antenna.left-antenna {
+  left: 20px;
+  animation: antennaLeft 2s ease-in-out infinite;
+}
+
+.robot-antenna.right-antenna {
+  right: 20px;
+  animation: antennaRight 2s ease-in-out infinite;
+}
+
+.robot-antenna::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  box-shadow: 0 0 10px #00ff88;
+  animation: antennaLight 1s ease-in-out infinite;
+}
+
+.robot-body {
+  width: 80px;
+  height: 40px;
+  background: linear-gradient(145deg, #4a5568, #2d3748);
+  border-radius: 15px;
+  margin: 0 auto;
+  position: relative;
+  border: 2px solid #667eea;
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+}
+
+.robot-chest-light {
+  width: 20px;
+  height: 20px;
+  background: #00ff88;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 15px #00ff88;
+  animation: chestPulse 1.5s ease-in-out infinite;
+}
+
+.loading-content h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s infinite;
+  letter-spacing: -0.02em;
+  background: linear-gradient(45deg, #ffffff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+}
+
+.loading-bar-container {
+  width: 350px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  margin: 2rem auto;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+  border-radius: 15px;
+  animation: loading 2s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+.loading-content p {
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-top: 1rem;
+  opacity: 0.9;
+  animation: fadeInOut 1.5s infinite;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.02em;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+}
+
+.robot-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: statusPulse 1s ease-in-out infinite;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+.status-text {
+  color: #00ff88;
+  font-weight: 600;
+  text-shadow: 0 0 10px #00ff88;
+}
+
+/* Robot Animations */
+@keyframes robotFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes robotGlow {
+  0% {
+    box-shadow: 
+      0 0 20px rgba(102, 126, 234, 0.5),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    box-shadow: 
+      0 0 30px rgba(102, 126, 234, 0.8),
+      inset 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes eyeBlink {
+  0%, 90%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  95% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes mouthTalk {
+  0%, 100% {
+    height: 8px;
+  }
+  50% {
+    height: 12px;
+  }
+}
+
+@keyframes antennaLeft {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes antennaRight {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes antennaLight {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px #00ff88;
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow: 0 0 5px #00ff88;
+  }
+}
+
+@keyframes chestPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.2);
+  }
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes loading {
+  0% {
+    width: 0%;
+    background-position: 0% 50%;
+  }
+  50% {
+    width: 70%;
+    background-position: 100% 50%;
+  }
+  100% {
+    width: 100%;
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+} 
