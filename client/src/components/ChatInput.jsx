@@ -22,7 +22,7 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
   return (
     <form className="chat-input" onSubmit={handleSubmit}>
       <div className="input-group">
-        <input
+        <textarea
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -30,7 +30,8 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
           placeholder="Type a message..."
           disabled={isTyping}
           className="message-input"
-        />
+        >
+        </textarea>
         <button 
           type="submit" 
           disabled={!input.trim() || isTyping}
