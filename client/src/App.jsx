@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ChatInput from './components/ChatInput';
 import './App.css';
 
 function App() {
@@ -16,35 +16,50 @@ function App() {
     localStorage.setItem("chatHistory", JSON.stringify(chat));
   }, [chat]);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const userMessage = { sender: 'user', text: input };
-    setChat([...chat, userMessage]);
-    setInput('');
+  const handleSendMessage = async (message) => {
+    if (!message.trim()) return;
+    const userMessage = { sender: 'user', text: message };
+    setChat(prev => [...prev, userMessage]);
     setIsTyping(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/chat', {
-        message: input,
+      const res = await axios.post('/api/chat', {
+        message: message,
         role: role,
       });
       const botReply = { sender: 'bot', text: res.data.reply };
-      setChat(prev => [...prev, userMessage, botReply]);
+      setChat(prev => [...prev, botReply]);
       const utterance = new SpeechSynthesisUtterance(res.data.reply);
       speechSynthesis.speak(utterance);
     } catch (err) {
       console.error(err);
+      const errorMessage = { sender: 'bot', text: 'Sorry, I encountered an error. Please try again.' };
+      setChat(prev => [...prev, errorMessage]);
     }
     setIsTyping(false);
   };
 
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    await handleSendMessage(input);
+    setInput('');
+  };
+
   const startListening = () => {
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.onresult = (e) => {
-      setInput(e.results[0][0].transcript);
-    };
-    recognition.start();
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        handleSendMessage(transcript);
+      };
+      recognition.onerror = (e) => {
+        console.error('Speech recognition error:', e.error);
+      };
+      recognition.start();
+    } else {
+      alert('Speech recognition is not supported in this browser.');
+    }
   };
 
   return (
@@ -64,14 +79,11 @@ function App() {
         {isTyping && <p className="typing">Bot is typing...</p>}
       </div>
       <div className="input-area">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Type a message..."
+        <ChatInput 
+          onSendMessage={handleSendMessage}
+          onStartListening={startListening}
+          isTyping={isTyping}
         />
-        <button onClick={sendMessage}>Send</button>
-        <button onClick={startListening}>🎙️ Speak</button>
       </div>
     </div>
   );
