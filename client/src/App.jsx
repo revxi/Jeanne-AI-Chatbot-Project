@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ChatInput from './components/ChatInput';
+import LoadingScreen from './components/LoadingScreen';
 import './App.css';
 
 function App() {
@@ -8,6 +9,16 @@ function App() {
   const [chat, setChat] = useState([]);
   const [role, setRole] = useState("friendly assistant");
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Show loading screen for 3 seconds
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // 🧠 Fetch chat history from backend on page load
   useEffect(() => {
@@ -69,29 +80,49 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <h1>AI Chatbot 🤖</h1>
-      <select onChange={(e) => setRole(e.target.value)} value={role}>
-        <option value="friendly assistant">Friendly Assistant</option>
-        <option value="teacher">Teacher</option>
-        <option value="funny friend">Funny Friend</option>
-      </select>
-      <div className="chat-window">
-        {chat.map((msg, idx) => (
-          <div key={idx} className={`message ${msg.sender}`}>
-            <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+    <>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <div className="app">
+          <div className="header-section">
+            <div className="robot-logo-main">
+              <div className="robot-head-main">
+                <div className="robot-eye-main left-eye-main"></div>
+                <div className="robot-eye-main right-eye-main"></div>
+                <div className="robot-mouth-main"></div>
+                <div className="robot-antenna-main left-antenna-main"></div>
+                <div className="robot-antenna-main right-antenna-main"></div>
+              </div>
+              <div className="robot-body-main">
+                <div className="robot-chest-light-main"></div>
+              </div>
+            </div>
+            <h1>AI Chatbot</h1>
           </div>
-        ))}
-        {isTyping && <p className="typing">Bot is typing...</p>}
-      </div>
-      <div className="input-area">
-        <ChatInput 
-          onSendMessage={handleSendMessage}
-          onStartListening={startListening}
-          isTyping={isTyping}
-        />
-      </div>
-    </div>
+          <select onChange={(e) => setRole(e.target.value)} value={role}>
+            <option value="friendly assistant">Friendly Assistant</option>
+            <option value="teacher">Teacher</option>
+            <option value="funny friend">Funny Friend</option>
+          </select>
+          <div className="chat-window">
+            {chat.map((msg, idx) => (
+              <div key={idx} className={`message ${msg.sender}`}>
+                <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+              </div>
+            ))}
+            {isTyping && <p className="typing">Bot is typing...</p>}
+          </div>
+          <div className="input-area">
+            <ChatInput 
+              onSendMessage={handleSendMessage}
+              onStartListening={startListening}
+              isTyping={isTyping}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

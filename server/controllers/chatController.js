@@ -6,6 +6,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+
 const historyPath = path.join(__dirname, '..', 'data', 'chatHistory.json');
 
 const appendToHistory = (entry) => {
@@ -19,6 +20,7 @@ const appendToHistory = (entry) => {
     console.error('Failed to write to chat history:', err);
   }
 };
+
 
 const chatController = {
   async sendMessage(req, res) {
