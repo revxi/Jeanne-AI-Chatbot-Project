@@ -1,3 +1,4 @@
+/*ChatInput.jsx*/
 import { useState, useRef, useEffect } from "react";
 import "./ChatInput.css";
 
