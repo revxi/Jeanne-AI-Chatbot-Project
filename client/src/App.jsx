@@ -6,10 +6,7 @@ import './App.css';
 
 function App() {
   const [input, setInput] = useState('');
-  const [chat, setChat] = useState(() => {
-    const saved = localStorage.getItem("chatHistory");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [chat, setChat] = useState([]);
   const [role, setRole] = useState("friendly assistant");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,9 +20,18 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  // 🧠 Fetch chat history from backend on page load
   useEffect(() => {
-    localStorage.setItem("chatHistory", JSON.stringify(chat));
-  }, [chat]);
+    const fetchHistory = async () => {
+      try {
+        const res = await axios.get('/api/chat/history');
+        setChat(res.data.history || []);
+      } catch (err) {
+        console.error('Failed to load chat history:', err);
+      }
+    };
+    fetchHistory();
+  }, []);
 
   const handleSendMessage = async (message) => {
     if (!message.trim()) return;
