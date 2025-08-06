@@ -2,8 +2,10 @@ import React from 'react';
 import './LoadingScreen.css';
 
 const LoadingScreen = () => {
+  const isDarkMode = localStorage.getItem("darkMode") === "true";
+  
   return (
-    <div className="loading-screen">
+    <div className={`loading-screen ${isDarkMode ? 'dark-mode' : ''}`}>
       <div className="loading-content">
         <div className="robot-logo">
           <div className="robot-head">

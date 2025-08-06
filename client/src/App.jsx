@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ChatInput from './components/ChatInput';
 import LoadingScreen from './components/LoadingScreen';
+import Footer from './components/Footer';
 import './App.css';
 
 function App() {
@@ -10,6 +11,10 @@ function App() {
   const [role, setRole] = useState("friendly assistant");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     // Show loading screen for 3 seconds
@@ -32,6 +37,19 @@ function App() {
     };
     fetchHistory();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   const handleSendMessage = async (message) => {
     if (!message.trim()) return;
@@ -84,7 +102,7 @@ function App() {
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        <div className="app">
+        <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
           <div className="header-section">
             <div className="robot-logo-main">
               <div className="robot-head-main">
@@ -99,6 +117,13 @@ function App() {
               </div>
             </div>
             <h1>AI Chatbot</h1>
+            <button 
+              className="dark-mode-toggle"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
           </div>
           <select onChange={(e) => setRole(e.target.value)} value={role}>
             <option value="friendly assistant">Friendly Assistant</option>
@@ -120,6 +145,7 @@ function App() {
               isTyping={isTyping}
             />
           </div>
+          <Footer isDarkMode={isDarkMode} />
         </div>
       )}
     </>

@@ -13,12 +13,30 @@
   z-index: 1000;
   animation: fadeIn 0.5s ease-in;
   font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+.loading-screen.dark-mode {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 .loading-content {
   text-align: center;
   color: white;
   animation: slideUp 0.8s ease-out;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .loading-content {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Robot Logo Styles */
@@ -32,7 +50,7 @@
   width: 120px;
   height: 100px;
   background: linear-gradient(145deg, #2d3748, #4a5568);
-  border-radius: 20px;
+  border-radius: 25px;
   position: relative;
   margin: 0 auto 10px;
   border: 3px solid #667eea;
@@ -40,6 +58,14 @@
     0 0 20px rgba(102, 126, 234, 0.5),
     inset 0 0 20px rgba(255, 255, 255, 0.1);
   animation: robotGlow 2s ease-in-out infinite alternate;
+}
+
+.dark-mode .robot-head {
+  background: linear-gradient(145deg, #1a202c, #2d3748);
+  border-color: #667eea;
+  box-shadow: 
+    0 0 20px rgba(102, 126, 234, 0.6),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .robot-eye {
@@ -111,11 +137,15 @@
   width: 80px;
   height: 40px;
   background: linear-gradient(145deg, #4a5568, #2d3748);
-  border-radius: 15px;
+  border-radius: 20px;
   margin: 0 auto;
   position: relative;
   border: 2px solid #667eea;
   box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+}
+
+.dark-mode .robot-body {
+  background: linear-gradient(145deg, #2d3748, #1a202c);
 }
 
 .robot-chest-light {
@@ -146,20 +176,31 @@
   text-transform: uppercase;
 }
 
+.dark-mode .loading-content h1 {
+  background: linear-gradient(45deg, #e2e8f0, #cbd5e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .loading-bar-container {
   width: 350px;
   height: 10px;
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
+  border-radius: 20px;
   margin: 2rem auto;
   overflow: hidden;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.dark-mode .loading-bar-container {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .loading-bar {
   height: 100%;
   background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-  border-radius: 15px;
+  border-radius: 20px;
   animation: loading 2s ease-in-out infinite;
   background-size: 200% 100%;
 }
@@ -174,6 +215,15 @@
   letter-spacing: 0.02em;
   font-family: 'Orbitron', monospace;
   text-transform: uppercase;
+  padding: 15px 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.dark-mode .loading-content p {
+  opacity: 0.8;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .robot-status {
@@ -186,6 +236,14 @@
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  padding: 15px 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.dark-mode .robot-status {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .status-dot {
