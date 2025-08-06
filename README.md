@@ -1,106 +1,175 @@
-# Jeanne 🤖 — AI Chatbot Assistant
+# Jeanne AI Chatbot Project
 
-**Jeanne** is a full-stack AI chatbot application designed to deliver natural, intelligent conversations using OpenAI’s GPT. Built with modern tools like React, Node.js, and Vite, Jeanne features a clean interface, chat history, typing animation, role switching, and optional voice support.
+A full-stack AI chatbot application built with React (frontend) and Node.js/Express (backend), powered by OpenAI's GPT model.
 
-Whether you're experimenting with conversational AI or building something production-ready, Jeanne offers a solid foundation to get started.
+## Project Structure
 
----
+```
+ai-chatbot/
+├── client/                 # Frontend (React + Vite)
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+├── server/                 # Backend (Node.js + Express)
+│   ├── controllers/
+│   │   └── chatController.js
+│   ├── routes/
+│   │   └── chat.js
+│   ├── server.js
+│   └── package.json
+├── .env                    # Environment variables (keep this secure)
+├── .gitignore
+├── package.json            # Root package.json for scripts
+└── README.md
+```
 
 ## ✨ Features
 
-- 🔮 **OpenAI Integration** – GPT-based responses with contextual awareness.
-- 💬 **Chat History** – Maintains conversation flow for better continuity.
-- 🎭 **Role Switching** – Interact with the bot in various assistant personas.
-- ⌨️ **Typing Animation** – Smooth typing effect for enhanced user experience.
-- 🎙️ **Speech-to-Text & Text-to-Speech** – Optional voice features using Web Speech API.
-- ⚙️ **Modern Tech Stack** – Vite + React frontend and Express backend.
+- 🤖 AI-powered chatbot using OpenAI GPT-3.5-turbo
+- 🎙️ Voice input support
+- 🔊 Text-to-speech responses
+- 💾 Chat history persistence
+- 🎭 Multiple personality modes (Friendly Assistant, Teacher, Funny Friend)
+- 📱 Responsive design
 
----
+## Setup Instructions
 
-## 📂 Project Structure
+### Prerequisites
 
-ai-chatbot/ 
-├── client/            # Frontend (React + Vite) │  
-├── public/ │  
-└── src/ │       
-├── assets/ │      
-├── components/ │      
-├── App.jsx │      
-└── ... 
-├── server/            # Backend (Node.js + Express) │   
-├── server.js │  
-├── routes/ │   
-├── controllers/ │  
-└── ...
-└── .env               # Environment variables (keep this secure)
+- Node.js (v14 or higher)
+- npm or yarn
+- OpenAI API key
 
----
-
-## 🚀 Getting Started
+### Installation
 
 1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd Jeanne-AI-Chatbot-Project
+   ```
 
+2. **Install all dependencies**
+   ```bash
+   npm run install:all
+   ```
+   Or install individually:
+   ```bash
+   npm install
+   npm run install:server
+   npm run install:client
+   ```
+
+3. **Set up environment variables**
+   - Copy the `.env` file and add your OpenAI API key:
+   ```
+   OPENAI_API_KEY=your_actual_openai_api_key_here
+   PORT=5000
+   ```
+
+### Running the Application
+
+#### Development Mode (Both client and server)
 ```bash
-git clone https://github.com/your-username/jeanne-ai-chatbot.git
-cd jeanne-ai-chatbot
-
-2. Configure Environment
-
-
-
-Create a .env file inside the server/ folder:
-
-OPENAI_API_KEY=your_openai_api_key
-
-3. Install Dependencies
-
-
-
-# Frontend
-cd client
-npm install
-
-# Backend
-cd ../server
-npm install
-
-4. Run the Application
-
-
-
-# Start backend
-node server.js
-
-# Start frontend
-cd ../client
 npm run dev
+```
 
+#### Run individually
+```bash
+# Start server only
+npm run server:dev
 
-🔐 Important Notes
+# Start client only
+npm run client:dev
+```
 
-Ensure .env is listed in your .gitignore to keep API keys safe.
+#### Production Mode
+```bash
+# Build client
+npm run client:build
 
-For deployment, frontend can be hosted on Vercel and backend on Render or similar platforms.
+# Start server
+npm run server:start
+```
 
+### URLs
 
-📄 License
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:5000
+- **API Health Check**: http://localhost:5000/health
 
-This project is licensed under the MIT License.
+## API Endpoints
 
+### POST /api/chat
+Send a message to the chatbot.
 
-🤝 Contributions
+**Request Body:**
+```json
+{
+  "message": "Hello, how are you?",
+  "role": "friendly assistant"
+}
+```
 
-Open to feedback, issues, and pull requests! Feel free to contribute to improve Jeanne.
+**Response:**
+```json
+{
+  "reply": "Hello! I'm doing great, thank you for asking. How can I help you today?"
+}
+```
 
+## Environment Variables
 
-🧠 Powered By
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OPENAI_API_KEY` | Your OpenAI API key | Required |
+| `PORT` | Server port number | 5000 |
 
-OpenAI
+## Technologies Used
 
-React
+### Frontend
+- React 18
+- Vite
+- Axios for API calls
+- CSS3
 
-Node.js
+### Backend
+- Node.js
+- Express.js
+- OpenAI API
+- CORS
+- dotenv
 
-Vite
+## Contributing
 
-> Made with 💻 by Diksha
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **OpenAI API Key Error**: Make sure your API key is correctly set in the `.env` file
+2. **CORS Issues**: The server is configured to accept requests from the frontend
+3. **Port Conflicts**: Change the port in the `.env` file if 5000 is already in use
+
+### Getting Help
+
+If you encounter any issues, please check:
+- Console logs in both frontend and backend
+- Network tab in browser developer tools
+- Server logs for detailed error messages

@@ -1,0 +1,360 @@
+.chat-input {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  max-width: 100%;
+  position: relative;
+}
+
+.message-input-container {
+  flex: 1;
+  position: relative;
+}
+
+.message-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s ease;
+  resize: none;
+  min-height: 3.5rem;
+  max-height: 120px;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+}
+
+.message-input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.message-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1), var(--shadow-md);
+  background: var(--bg-primary);
+}
+
+.message-input:disabled {
+  background-color: var(--bg-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.send-button,
+.voice-button {
+  padding: 1rem;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.5rem;
+  height: 3.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.send-button {
+  background: var(--user-gradient);
+  color: var(--user-text);
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.send-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.send-button:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.voice-button {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 2px solid var(--border-color);
+}
+
+.voice-button:hover:not(:disabled) {
+  background: var(--bg-primary);
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.voice-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.voice-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.voice-button.recording {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border-color: #ef4444;
+  animation: pulse 2s infinite;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.send-button .button-icon {
+  transform: rotate(-45deg);
+}
+
+/* Character counter */
+.character-counter {
+  position: absolute;
+  bottom: -1.5rem;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message-input:focus + .character-counter,
+.character-counter.visible {
+  opacity: 1;
+}
+
+.character-counter.warning {
+  color: #f59e0b;
+}
+
+.character-counter.error {
+  color: var(--error-text);
+}
+
+/* Input hints */
+.input-hints {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.input-hint {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  padding: 0.375rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.input-hint:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-focus);
+}
+
+/* Loading state */
+.input-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.input-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  animation: loading 1.5s infinite;
+}
+
+/* Keyboard shortcut indicator */
+.keyboard-shortcut {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.message-input:not(:focus):placeholder-shown + .keyboard-shortcut {
+  opacity: 1;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Button ripple effect */
+.send-button::before,
+.voice-button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.send-button:active::before,
+.voice-button:active::before {
+  width: 100px;
+  height: 100px;
+}
+
+/* Focus trap for accessibility */
+.input-group:focus-within .message-input {
+  border-color: var(--border-focus);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .input-group {
+    gap: 0.5rem;
+  }
+
+  .message-input {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .send-button,
+  .voice-button {
+    min-width: 3rem;
+    height: 3rem;
+    padding: 0.75rem;
+  }
+
+  .button-icon {
+    font-size: 1.1rem;
+  }
+
+  .input-hints {
+    margin-top: 0.5rem;
+  }
+
+  .input-hint {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .input-actions {
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  .message-input {
+    border-radius: 1rem;
+  }
+
+  .send-button,
+  .voice-button {
+    min-width: 4rem;
+    height: 3rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .message-input,
+  .send-button,
+  .voice-button {
+    border-width: 2px;
+  }
+
+  .message-input:focus {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .send-button,
+  .voice-button,
+  .message-input {
+    transition: none;
+  }
+
+  .voice-button.recording {
+    animation: none;
+  }
+
+  .send-button::before,
+  .voice-button::before {
+    transition: none;
+  }
+}
