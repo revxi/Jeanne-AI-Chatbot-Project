@@ -5,15 +5,39 @@ if (!process.env.OPENAI_API_KEY) {
   console.error("OPENAI_API_KEY is not set in environment variables");
   process.exit(1);
 }
+const fs = require('fs');
+const path = require('path');
+const OpenAI = require('openai');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+
+const historyPath = path.join(__dirname, '..', 'data', 'chatHistory.json');
+
+const appendToHistory = (entry) => {
+  try {
+    const data = fs.existsSync(historyPath)
+      ? JSON.parse(fs.readFileSync(historyPath, 'utf-8'))
+      : [];
+    data.push(entry);
+    fs.writeFileSync(historyPath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Failed to write to chat history:', err);
+  }
+};
+
+
 const chatController = {
   async sendMessage(req, res) {
     try {
       const { message, role } = req.body;
+    const { message, role } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
 
       // Validate input
       if (!message || !message.trim()) {
@@ -51,6 +75,11 @@ const chatController = {
 
       const reply = response.choices[0].message.content;
       console.log("Sending response:", reply.substring(0, 50) + "...");
+      const reply = response.choices[0].message.content;
+
+      // Save to file
+      appendToHistory({ sender: 'user', text: message });
+      appendToHistory({ sender: 'bot', text: reply });
 
       res.json({ reply });
     } catch (err) {
@@ -82,6 +111,18 @@ const chatController = {
       });
     }
   },
+
+  getChatHistory(req, res) {
+    try {
+      const data = fs.existsSync(historyPath)
+        ? JSON.parse(fs.readFileSync(historyPath, 'utf-8'))
+        : [];
+      res.json({ history: data });
+    } catch (err) {
+      console.error('Failed to read chat history:', err);
+      res.status(500).json({ error: 'Unable to load chat history' });
+    }
+  }
 };
 
 module.exports = chatController;

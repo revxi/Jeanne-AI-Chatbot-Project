@@ -1,5 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
+
 .chat-input {
+
   width: 100%;
+  margin-top: 1rem;
+  font-family: 'Inter', sans-serif;
 }
 
 .input-group {
@@ -8,6 +13,9 @@
   align-items: flex-end;
   max-width: 100%;
   position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  align-items: center;
 }
 
 .message-input-container {
@@ -47,7 +55,55 @@
 .message-input:disabled {
   background-color: var(--bg-secondary);
   opacity: 0.6;
+  padding: 16px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  outline: none;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2d3748;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode styles for input */
+.dark-mode .message-input {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.message-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+.dark-mode .message-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.message-input:disabled {
+  background-color: #f7fafc;
   cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dark-mode .message-input:disabled {
+  background-color: #1a202c;
+  opacity: 0.4;
+}
+
+.message-input::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+.dark-mode .message-input::placeholder {
+  color: #718096;
 }
 
 .input-actions {
@@ -356,5 +412,114 @@
   .send-button::before,
   .voice-button::before {
     transition: none;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.send-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  min-width: 100px;
+}
+
+.send-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+}
+
+.send-button:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .send-button:disabled {
+  background: #4a5568;
+}
+
+.voice-button {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  min-width: 100px;
+  position: relative;
+}
+
+.voice-button::before {
+  content: '🎤';
+  font-size: 1.2rem;
+  margin-right: 8px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.voice-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e91e63 0%, #f44336 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(240, 147, 251, 0.3);
+}
+
+.voice-button:active:not(:disabled) {
+  transform: translateY(0px);
+  box-shadow: 0 2px 4px rgba(240, 147, 251, 0.2);
+}
+
+.voice-button:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .voice-button:disabled {
+  background: #4a5568;
+}
+
+.voice-button:disabled::before {
+  opacity: 0.5;
+}
+
+/* Microphone button states */
+.voice-button.recording {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  animation: recordingPulse 1.5s ease-in-out infinite;
+}
+
+.voice-button.recording::before {
+  content: '🔴';
+  animation: recordingBlink 0.8s ease-in-out infinite;
+}
+
+.voice-button.recording:hover {
+  background: linear-gradient(135deg, #c53030 0%, #a52727 100%);
+}
+
+/* Microphone animations */
+@keyframes recordingPulse {
+  0%, 100% {
+    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.6);
+  }
+}
+
+@keyframes recordingBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }
