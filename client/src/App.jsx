@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ChatInput from './components/ChatInput';
 import LoadingScreen from './components/LoadingScreen';
+import Footer from './components/Footer';
+import { auth, googleProvider } from './firebase'; // Import auth and googleProvider
+import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth"; // Import auth functions
 import './App.css';
 
 function App() {
@@ -10,39 +13,68 @@ function App() {
   const [role, setRole] = useState("friendly assistant");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [user, setUser] = useState(null); // Add user state
 
   useEffect(() => {
-    // Show loading screen for 3 seconds
-    const timer = setTimeout(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
+    });
+    return () => unsubscribe();
   }, []);
 
   // 🧠 Fetch chat history from backend on page load
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const res = await axios.get('/api/chat/history');
-        setChat(res.data.history || []);
-      } catch (err) {
-        console.error('Failed to load chat history:', err);
-      }
-    };
-    fetchHistory();
-  }, []);
+    if (user) {
+      const fetchHistory = async () => {
+        try {
+          const token = await user.getIdToken();
+          const res = await axios.get('/api/chat/history', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          setChat(res.data.history || []);
+        } catch (err) {
+          console.error('Failed to load chat history:', err);
+        }
+      };
+      fetchHistory();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   const handleSendMessage = async (message) => {
-    if (!message.trim()) return;
+    if (!message.trim() || !user) return;
     const userMessage = { sender: 'user', text: message };
     setChat(prev => [...prev, userMessage]);
     setIsTyping(true);
 
     try {
+      const token = await user.getIdToken();
       const res = await axios.post('/api/chat', {
         message: message,
         role: role,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       const botReply = { sender: 'bot', text: res.data.reply };
       setChat(prev => [...prev, botReply]);
@@ -79,12 +111,29 @@ function App() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
   return (
     <>
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        <div className="app">
+        <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
           <div className="header-section">
             <div className="robot-logo-main">
               <div className="robot-head-main">
@@ -99,29 +148,45 @@ function App() {
               </div>
             </div>
             <h1>AI Chatbot</h1>
+            <button
+              className="dark-mode-toggle"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
+            {user && <button onClick={handleSignOut}>Sign Out</button>}
           </div>
-          <select onChange={(e) => setRole(e.target.value)} value={role}>
-            <option value="friendly assistant">Friendly Assistant</option>
-            <option value="teacher">Teacher</option>
-            <option value="funny friend">Funny Friend</option>
-          </select>
-          <div className="chat-window">
-            {chat.map((msg, idx) => (
-              <div key={idx} className={`message ${msg.sender}`}>
-                <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+          {!user ? (
+            <button onClick={handleGoogleSignIn}>Continue with Google</button>
+          ) : (
+            <>
+              <select onChange={(e) => setRole(e.target.value)} value={role}>
+                <option value="friendly assistant">Friendly Assistant</option>
+                <option value="teacher">Teacher</option>
+                <option value="funny friend">Funny Friend</option>
+              </select>
+              <div className="chat-window">
+                {chat.map((msg, idx) => (
+                  <div key={idx} className={`message ${msg.sender}`}>
+                    <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+                  </div>
+                ))}
+                {isTyping && <p className="typing">Bot is typing...</p>}
               </div>
-            ))}
-            {isTyping && <p className="typing">Bot is typing...</p>}
-          </div>
-          <div className="input-area">
-            <ChatInput 
-              onSendMessage={handleSendMessage}
-              onStartListening={startListening}
-              isTyping={isTyping}
-            />
-          </div>
+              <div className="input-area">
+                <ChatInput
+                  onSendMessage={handleSendMessage}
+                  onStartListening={startListening}
+                  isTyping={isTyping}
+                />
+              </div>
+            </>
+          )}
+          <Footer isDarkMode={isDarkMode} />
         </div>
-      )}
+      )
+      }
     </>
   );
 }
