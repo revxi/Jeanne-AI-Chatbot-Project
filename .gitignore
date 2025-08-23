@@ -1,40 +1,43 @@
-# Node modules (both frontend and backend)
-node_modules/
-client/node_modules/
-server/node_modules/
+# Dependencies
+/node_modules
+/client/node_modules
+/server/node_modules
 
-# Build output
-dist/
-build/
-client/dist/
-server/build/
+# Firebase - IMPORTANT!
+# This file contains sensitive credentials. Do NOT commit it.
+/server/serviceAccountKey.json
 
-# Logs
+# Environment Variables
+# These files contain API keys and other secrets.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/client/.env
+/server/.env
+
+# Production build files
+/dist
+/build
+/client/dist
+/client/build
+
+# Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Environment secrets
-.env
-.env.local
-.env.*.local
-client/.env
-server/.env
+# IDE and Editor directories
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# OS-specific
+# Operating System files
 .DS_Store
 Thumbs.db
-
-# IDEs/editors
-.vscode/
-.idea/
-
-# Vercel / Netlify / Render
-.vercel/
-.netlify/
-render.yaml
-
-# Misc
-*.log
-*.cache
-*.tgz

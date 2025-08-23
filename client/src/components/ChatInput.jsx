@@ -1,4 +1,3 @@
-/*ChatInput.jsx*/
 import { useState, useRef, useEffect } from "react";
 import "./ChatInput.css";
 
@@ -128,8 +127,23 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
       : "";
 
   return (
-    <div className="chat-input">
-      <form onSubmit={handleSubmit}>
+    <div className="chat-input-wrapper">
+      {!input && !isTyping && (
+        <div className="input-hints">
+          {suggestedPrompts.map((prompt, index) => (
+            <button
+              key={index}
+              type="button"
+              className="input-hint"
+              onClick={() => handleSuggestedPrompt(prompt)}
+              title={`Try: ${prompt}`}
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+      )}
+      <form className="chat-input" onSubmit={handleSubmit}>
         <div className="input-group">
           <div className="message-input-container">
             <textarea
@@ -143,10 +157,6 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
               rows="1"
               maxLength={maxChars + 100} // Allow slight overflow for UX
             />
-
-            {!input && !isTyping && (
-              <div className="keyboard-shortcut">Enter ↵</div>
-            )}
 
             {showCharCounter && (
               <div className={`character-counter ${charCounterClass} visible`}>
@@ -181,53 +191,7 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
           </div>
         </div>
       </form>
-
-      {!input && !isTyping && (
-        <div className="input-hints">
-          {suggestedPrompts.map((prompt, index) => (
-            <button
-              key={index}
-              type="button"
-              className="input-hint"
-              onClick={() => handleSuggestedPrompt(prompt)}
-              title={`Try: ${prompt}`}
-            >
-              {prompt}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
-    <form className="chat-input" onSubmit={handleSubmit}>
-      <div className="input-group">
-        <textarea
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type a message..."
-          disabled={isTyping}
-          className="message-input"
-        >
-        </textarea>
-        <button 
-          type="submit" 
-          disabled={!input.trim() || isTyping}
-          className="send-button"
-        >
-          Send
-        </button>
-        <button 
-          type="button"
-          onClick={onStartListening}
-          disabled={isTyping}
-          className="voice-button"
-          title="Voice input"
-        >
-          🎙️
-        </button>
-      </div>
-    </form>
   );
 };
 
