@@ -137,8 +137,9 @@
 }
 
 .send-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  transition: all 0.18s cubic-bezier(.19, 1, .22, 1);
 }
 
 .send-button:active:not(:disabled) {
@@ -203,7 +204,7 @@
   transition: opacity 0.2s ease;
 }
 
-.message-input:focus + .character-counter,
+.message-input:focus+.character-counter,
 .character-counter.visible {
   opacity: 1;
 }
@@ -254,12 +255,10 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(59, 130, 246, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(59, 130, 246, 0.1),
+      transparent);
   animation: loading 1.5s infinite;
 }
 
@@ -280,16 +279,18 @@
   pointer-events: none;
 }
 
-.message-input:not(:focus):placeholder-shown + .keyboard-shortcut {
+.message-input:not(:focus):placeholder-shown+.keyboard-shortcut {
   opacity: 1;
 }
 
 /* Animations */
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -299,6 +300,7 @@
   0% {
     left: -100%;
   }
+
   100% {
     left: 100%;
   }
@@ -386,6 +388,7 @@
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .message-input,
   .send-button,
   .voice-button {
@@ -399,6 +402,7 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
   .send-button,
   .voice-button,
   .message-input {
@@ -412,114 +416,122 @@
   .send-button::before,
   .voice-button::before {
     transition: none;
-  padding: 16px 20px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.01em;
-  position: relative;
-  overflow: hidden;
-}
-
-.send-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  min-width: 100px;
-}
-
-.send-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
-}
-
-.send-button:disabled {
-  background: #cbd5e0;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.dark-mode .send-button:disabled {
-  background: #4a5568;
-}
-
-.voice-button {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  min-width: 100px;
-  position: relative;
-}
-
-.voice-button::before {
-  content: '🎤';
-  font-size: 1.2rem;
-  margin-right: 8px;
-  display: inline-block;
-  transition: all 0.3s ease;
-}
-
-.voice-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #e91e63 0%, #f44336 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(240, 147, 251, 0.3);
-}
-
-.voice-button:active:not(:disabled) {
-  transform: translateY(0px);
-  box-shadow: 0 2px 4px rgba(240, 147, 251, 0.2);
-}
-
-.voice-button:disabled {
-  background: #cbd5e0;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.dark-mode .voice-button:disabled {
-  background: #4a5568;
-}
-
-.voice-button:disabled::before {
-  opacity: 0.5;
-}
-
-/* Microphone button states */
-.voice-button.recording {
-  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-  animation: recordingPulse 1.5s ease-in-out infinite;
-}
-
-.voice-button.recording::before {
-  content: '🔴';
-  animation: recordingBlink 0.8s ease-in-out infinite;
-}
-
-.voice-button.recording:hover {
-  background: linear-gradient(135deg, #c53030 0%, #a52727 100%);
-}
-
-/* Microphone animations */
-@keyframes recordingPulse {
-  0%, 100% {
-    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+    padding: 16px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
   }
-  50% {
-    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.6);
-  }
-}
 
-@keyframes recordingBlink {
-  0%, 100% {
-    opacity: 1;
+  .send-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    min-width: 100px;
   }
-  50% {
+
+  .send-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+  }
+
+  .send-button:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark-mode .send-button:disabled {
+    background: #4a5568;
+  }
+
+  .voice-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    min-width: 100px;
+    position: relative;
+  }
+
+  .voice-button::before {
+    content: '🎤';
+    font-size: 1.2rem;
+    margin-right: 8px;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  .voice-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e91e63 0%, #f44336 100%);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    transition: all 0.18s cubic-bezier(.19, 1, .22, 1);
+  }
+
+  .voice-button:active:not(:disabled) {
+    transform: translateY(0px);
+    box-shadow: 0 2px 4px rgba(240, 147, 251, 0.2);
+  }
+
+  .voice-button:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark-mode .voice-button:disabled {
+    background: #4a5568;
+  }
+
+  .voice-button:disabled::before {
     opacity: 0.5;
+  }
+
+  /* Microphone button states */
+  .voice-button.recording {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    animation: recordingPulse 1.5s ease-in-out infinite;
+  }
+
+  .voice-button.recording::before {
+    content: '🔴';
+    animation: recordingBlink 0.8s ease-in-out infinite;
+  }
+
+  .voice-button.recording:hover {
+    background: linear-gradient(135deg, #c53030 0%, #a52727 100%);
+  }
+
+  /* Microphone animations */
+  @keyframes recordingPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+    }
+
+    50% {
+      box-shadow: 0 4px 12px rgba(229, 62, 62, 0.6);
+    }
+  }
+
+  @keyframes recordingBlink {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
   }
 }
