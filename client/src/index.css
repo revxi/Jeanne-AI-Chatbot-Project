@@ -349,6 +349,7 @@ select:focus {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -369,6 +370,7 @@ select:focus {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -381,6 +383,7 @@ select:focus {
 
 /* Print styles */
 @media print {
+
   *,
   *::before,
   *::after {
@@ -403,4 +406,30 @@ select:focus {
   h3 {
     page-break-after: avoid;
   }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s cubic-bezier(.33, 1, .68, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+#nprogress .bar {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  height: 3px;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #667eea, 0 0 5px #764ba2;
+}
+
+#nprogress .spinner {
+  display: none;
 }

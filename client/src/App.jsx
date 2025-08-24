@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ChatInput from "./components/ChatInput";
+import LoadingScreen from "./components/LoadingScreen";
+import Footer from "./components/Footer";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 import "./App.css";
 
 // Configure axios base URL for development
@@ -10,81 +14,65 @@ const API_BASE_URL =
 function App() {
   const [input, setInput] = useState("");
   const [chat, setChat] = useState([]); // Start with empty array, no localStorage
-  const [role, setRole] = useState("friendly assistant"); // Default role, no localStorage
-  const [isTyping, setIsTyping] = useState(false);
-  const [theme, setTheme] = useState("light"); // Default theme, no localStorage
-  const chatWindowRef = useRef(null);
-
-  // Apply theme without localStorage
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  useEffect(() => {
-    // Scroll to bottom when new messages are added
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-    }
-  }, [chat, isTyping]);
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import ChatInput from './components/ChatInput';
-import LoadingScreen from './components/LoadingScreen';
-import Footer from './components/Footer';
-import './App.css';
-
-function App() {
-  const [input, setInput] = useState('');
-  const [chat, setChat] = useState([]);
-  const [role, setRole] = useState("friendly assistant");
+  const [role, setRole] = useState("friendly assistant"); // Default role
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("darkMode");
     return saved ? JSON.parse(saved) : false;
   });
+  const chatWindowRef = useRef(null);
 
+  // Theme apply
   useEffect(() => {
-    // Show loading screen for 3 seconds
+    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
+
+  // Show loading screen for 3 seconds on mount
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
-  // 🧠 Fetch chat history from backend on page load
+  // Scroll chat to bottom on new messages or typing status
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [chat, isTyping]);
+
+  // Fetch chat history on mount
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get('/api/chat/history');
+        NProgress.start();
+        const res = await axios.get("/api/chat/history");
         setChat(res.data.history || []);
+        NProgress.done();
       } catch (err) {
-        console.error('Failed to load chat history:', err);
+        console.error("Failed to load chat history:", err);
+        NProgress.done();
       }
     };
     fetchHistory();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
-    if (isDarkMode) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-  }, [isDarkMode]);
-
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((prev) => !prev);
   };
 
   const handleSendMessage = async (message) => {
     if (!message.trim()) return;
 
-    console.log("🚀 Sending message:", message);
-    console.log("🎭 Current role:", role);
-    console.log("🌐 API Base URL:", API_BASE_URL);
+    NProgress.start();
 
     const userMessage = {
       sender: "user",
@@ -98,25 +86,15 @@ function App() {
 
     try {
       const requestUrl = `${API_BASE_URL}/api/chat`;
-      console.log("📡 Making request to:", requestUrl);
-
-      const requestData = {
-        message: message,
-        role: role,
-      };
-      console.log("📦 Request data:", requestData);
+      const requestData = { message, role };
 
       const res = await axios({
         method: "post",
         url: requestUrl,
         data: requestData,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 30000, // 30 second timeout
+        headers: { "Content-Type": "application/json" },
+        timeout: 30000,
       });
-
-      console.log("✅ Response received:", res.data);
 
       if (!res.data || !res.data.reply) {
         throw new Error("Invalid response format from server");
@@ -131,7 +109,6 @@ function App() {
 
       setChat((prev) => [...prev, botReply]);
 
-      // Text-to-speech with better error handling
       if ("speechSynthesis" in window) {
         try {
           const utterance = new SpeechSynthesisUtterance(res.data.reply);
@@ -144,17 +121,7 @@ function App() {
         }
       }
     } catch (err) {
-      console.error("❌ Chat error details:");
-      console.error("Full error:", err);
-      console.error("Error message:", err.message);
-      console.error("Error code:", err.code);
-      console.error("Error response:", err.response);
-
-      if (err.response) {
-        console.error("Response status:", err.response.status);
-        console.error("Response data:", err.response.data);
-        console.error("Response headers:", err.response.headers);
-      }
+      console.error("Chat error details:", err);
 
       let errorText = "Sorry, I encountered an error. Please try again.";
 
@@ -164,16 +131,14 @@ function App() {
       } else if (err.code === "ECONNABORTED") {
         errorText = "❌ Request timeout. The server took too long to respond.";
       } else if (err.response?.status === 500) {
-        errorText = `❌ Server error: ${
-          err.response?.data?.error || "Internal server error"
-        }`;
+        errorText = `❌ Server error: ${err.response?.data?.error || "Internal server error"
+          }`;
         if (err.response?.data?.details) {
           errorText += ` (${err.response.data.details})`;
         }
       } else if (err.response?.status === 400) {
-        errorText = `❌ Bad request: ${
-          err.response?.data?.error || "Invalid request"
-        }`;
+        errorText = `❌ Bad request: ${err.response?.data?.error || "Invalid request"
+          }`;
       } else if (err.response?.data?.error) {
         errorText = `❌ ${err.response.data.error}`;
       }
@@ -187,7 +152,7 @@ function App() {
       };
       setChat((prev) => [...prev, errorMessage]);
     }
-
+    NProgress.done();
     setIsTyping(false);
   };
 
@@ -214,10 +179,6 @@ function App() {
     } else {
       alert("Speech recognition is not supported in this browser.");
     }
-  };
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   const clearChat = () => {
@@ -261,8 +222,12 @@ function App() {
     );
   };
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <div className="app">
+    <div className={`app ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="app-header">
         <h1 className="app-title">AI Chatbot 🤖</h1>
         <p className="app-subtitle">Your intelligent conversation partner</p>
@@ -282,14 +247,11 @@ function App() {
           </select>
 
           <button
-            onClick={toggleTheme}
+            onClick={toggleDarkMode}
             className="theme-toggle"
-            aria-label={`Switch to ${
-              theme === "light" ? "dark" : "light"
-            } theme`}
+            aria-label={`Switch to ${isDarkMode ? "light" : "dark"} theme`}
           >
-            {theme === "light" ? "🌙" : "☀️"}
-            {theme === "light" ? "Dark" : "Light"}
+            {isDarkMode ? "☀️ Light" : "🌙 Dark"}
           </button>
 
           <button
@@ -302,7 +264,6 @@ function App() {
           </button>
         </div>
 
-        {/* Debug info */}
         <div
           style={{
             fontSize: "12px",
@@ -313,8 +274,8 @@ function App() {
             borderRadius: "3px",
           }}
         >
-          Debug: API URL = {API_BASE_URL || "relative"} | Role = {role} |
-          Messages = {chat.length}
+          Debug: API URL = {API_BASE_URL || "relative"} | Role = {role} | Messages ={" "}
+          {chat.length}
         </div>
       </div>
 
@@ -355,59 +316,9 @@ function App() {
           />
         </div>
       </div>
+
+      <Footer isDarkMode={isDarkMode} />
     </div>
-=======
-    <>
-      {isLoading ? (
-        <LoadingScreen />
-      ) : (
-        <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
-          <div className="header-section">
-            <div className="robot-logo-main">
-              <div className="robot-head-main">
-                <div className="robot-eye-main left-eye-main"></div>
-                <div className="robot-eye-main right-eye-main"></div>
-                <div className="robot-mouth-main"></div>
-                <div className="robot-antenna-main left-antenna-main"></div>
-                <div className="robot-antenna-main right-antenna-main"></div>
-              </div>
-              <div className="robot-body-main">
-                <div className="robot-chest-light-main"></div>
-              </div>
-            </div>
-            <h1>AI Chatbot</h1>
-            <button 
-              className="dark-mode-toggle"
-              onClick={toggleDarkMode}
-              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {isDarkMode ? '☀️' : '🌙'}
-            </button>
-          </div>
-          <select onChange={(e) => setRole(e.target.value)} value={role}>
-            <option value="friendly assistant">Friendly Assistant</option>
-            <option value="teacher">Teacher</option>
-            <option value="funny friend">Funny Friend</option>
-          </select>
-          <div className="chat-window">
-            {chat.map((msg, idx) => (
-              <div key={idx} className={`message ${msg.sender}`}>
-                <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
-              </div>
-            ))}
-            {isTyping && <p className="typing">Bot is typing...</p>}
-          </div>
-          <div className="input-area">
-            <ChatInput 
-              onSendMessage={handleSendMessage}
-              onStartListening={startListening}
-              isTyping={isTyping}
-            />
-          </div>
-          <Footer isDarkMode={isDarkMode} />
-        </div>
-      )}
-    </>
   );
 }
 
