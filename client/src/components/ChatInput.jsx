@@ -128,6 +128,38 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
       : "";
 
   return (
+
+    <form className="chat-input" onSubmit={handleSubmit}>
+      <div className="input-group">
+        <textarea
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+          disabled={isTyping}
+          className="message-input"
+        >
+        </textarea>
+        <button 
+          type="submit" 
+          disabled={!input.trim() || isTyping}
+          className="send-button"
+        >
+          Send
+        </button>
+        <button 
+          type="button"
+          onClick={onStartListening}
+          disabled={isTyping}
+          className="voice-button"
+          title="Voice input"
+        >
+          🎙️
+        </button>
+      </div>
+    </form>
+=======
     <div className="chat-input">
       <form onSubmit={handleSubmit}>
         <div className="input-group">
@@ -198,6 +230,7 @@ const ChatInput = ({ onSendMessage, onStartListening, isTyping }) => {
         </div>
       )}
     </div>
+
   );
 };
 

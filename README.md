@@ -78,7 +78,7 @@ ai-chatbot/
 
 #### Development Mode (Both client and server)
 ```bash
-npm run dev
+  npm run install:all
 ```
 
 #### Run individually
