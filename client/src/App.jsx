@@ -1,3 +1,22 @@
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import axios from 'axios';
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "./firebase";
+import Navbar from './components/Navbar';
+import ChatPage from './pages/ChatPage'; // We will create this wrapper
+import Profile from './components/Profile';
+import LoadingScreen from './components/LoadingScreen';
+import Login from './components/Login';
+import './App.css';
+
+const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [chat, setChat] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(() => JSON.parse(localStorage.getItem("darkMode") || 'false'));
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ChatInput from "./components/ChatInput";
@@ -36,6 +55,25 @@ function App() {
 
   // Show loading screen for 3 seconds on mount
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, currentUser => {
+      setUser(currentUser);
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (user) {
+        const token = await user.getIdToken();
+        try {
+          const res = await axios.get(`${API_BASE_URL}/api/chat/history`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setChat(res.data.history || []);
+        } catch (err) {
+          console.error('Failed to load chat history:', err);
+        }
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
@@ -63,8 +101,15 @@ function App() {
       }
     };
     fetchHistory();
-  }, []);
+  }, [user]);
 
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+    document.body.classList.toggle('dark-mode', isDarkMode);
+  }, [isDarkMode]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => !prev);
   };
@@ -187,46 +232,36 @@ function App() {
     }
   };
 
-  const roleOptions = [
-    { value: "friendly assistant", label: "Friendly Assistant", icon: "😊" },
-    { value: "teacher", label: "Teacher", icon: "👨‍🏫" },
-    { value: "funny friend", label: "Funny Friend", icon: "😄" },
-    { value: "professional", label: "Professional", icon: "💼" },
-    { value: "creative", label: "Creative", icon: "🎨" },
-  ];
-
-  const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const renderMessage = (msg, idx) => {
-    const isUser = msg.sender === "user";
-    const isError = msg.isError;
-
-    return (
-      <div
-        key={msg.id || idx}
-        className={`message ${msg.sender}${isError ? " error" : ""}`}
-      >
-        <div className="message-avatar">{isUser ? "👤" : "🤖"}</div>
-        <div className="message-wrapper">
-          <div className="message-sender">
-            {isUser ? "You" : "Assistant"} • {formatTime(msg.timestamp)}
-          </div>
-          <div className="message-content">{msg.text}</div>
-        </div>
-      </div>
-    );
-  };
+  if (isLoading) return <LoadingScreen />;
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
   return (
+    <Router>
+      <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
+        {!user ? (
+          <Login />
+        ) : (
+          <>
+
+            <Navbar
+              user={user}
+              handleLogout={handleLogout}
+              isDarkMode={isDarkMode}
+              toggleDarkMode={() => setIsDarkMode(prev => !prev)}
+            />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<ChatPage user={user} chat={chat} setChat={setChat} />} />
+                <Route path="/profile" element={<Profile user={user} chatHistory={chat} />} />
+              </Routes>
+            </main>
+          </>
+        )}
+      </div>
+    </Router>
     <div className={`app ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="app-header">
         <h1 className="app-title">AI Chatbot 🤖</h1>

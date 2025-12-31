@@ -1,128 +1,81 @@
-const OpenAI = require("openai");
-
-// Add validation for API key
-if (!process.env.OPENAI_API_KEY) {
-  console.error("OPENAI_API_KEY is not set in environment variables");
-  process.exit(1);
-}
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
-const OpenAI = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const historyDirPath = path.join(__dirname, '..', 'data', 'history');
 
-
-const historyPath = path.join(__dirname, '..', 'data', 'chatHistory.json');
-
-const appendToHistory = (entry) => {
+// Ensure the history directory exists
+const ensureHistoryDir = async () => {
   try {
-    const data = fs.existsSync(historyPath)
-      ? JSON.parse(fs.readFileSync(historyPath, 'utf-8'))
-      : [];
-    data.push(entry);
-    fs.writeFileSync(historyPath, JSON.stringify(data, null, 2));
-  } catch (err) {
-    console.error('Failed to write to chat history:', err);
+    await fs.access(historyDirPath);
+  } catch {
+    await fs.mkdir(historyDirPath, { recursive: true });
   }
 };
+ensureHistoryDir();
 
+// Helper to get the user's history file path
+const getUserHistoryPath = (userId) => {
+  // Sanitize userId to prevent path traversal issues
+  const safeUserId = path.basename(userId);
+  return path.join(historyDirPath, `${safeUserId}.json`);
+};
 
-const chatController = {
-  async sendMessage(req, res) {
-    try {
-      const { message, role } = req.body;
+exports.sendMessage = async (req, res) => {
+  try {
     const { message, role } = req.body;
+    const userId = req.user.uid; // Get UID from our auth middleware
+    const userHistoryPath = getUserHistoryPath(userId);
 
-    if (!message || !message.trim()) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const chat = model.startChat({
+      history: [{ role: 'user', parts: [{ text: `You are a ${role}.` }] }],
+      generationConfig: { maxOutputTokens: 200 },
+    });
 
-      // Validate input
-      if (!message || !message.trim()) {
-        return res.status(400).json({ error: "Message is required" });
-      }
-
-      if (!role) {
-        return res.status(400).json({ error: "Role is required" });
-      }
-
-      console.log("Received request:", {
-        message: message.substring(0, 50) + "...",
-        role,
-      });
-
-      const systemPrompt = `You are a ${role}. Be helpful, friendly, and respond appropriately to your role.`;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message },
-        ],
-        max_tokens: 500, // Add reasonable limit
-        temperature: 0.7, // Add some creativity
-      });
-
-      if (
-        !response.choices ||
-        !response.choices[0] ||
-        !response.choices[0].message
-      ) {
-        throw new Error("Invalid response from OpenAI API");
-      }
-
-      const reply = response.choices[0].message.content;
-      console.log("Sending response:", reply.substring(0, 50) + "...");
-      const reply = response.choices[0].message.content;
-
-      // Save to file
-      appendToHistory({ sender: 'user', text: message });
-      appendToHistory({ sender: 'bot', text: reply });
-
-      res.json({ reply });
-    } catch (err) {
-      console.error("ChatController Error:", err);
-
-      // Handle specific OpenAI errors
-      if (err.status === 401) {
-        console.error("Invalid API key");
-        return res.status(500).json({ error: "Invalid API configuration" });
-      }
-
-      if (err.status === 429) {
-        console.error("Rate limit exceeded");
-        return res
-          .status(500)
-          .json({ error: "Service temporarily unavailable" });
-      }
-
-      if (err.status === 400) {
-        console.error("Bad request to OpenAI:", err.message);
-        return res.status(500).json({ error: "Invalid request" });
-      }
-
-      // Generic error
-      res.status(500).json({
-        error: "Failed to get response from AI",
-        details:
-          process.env.NODE_ENV === "development" ? err.message : undefined,
-      });
-    }
-  },
-
-  getChatHistory(req, res) {
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    const reply = response.text();
+    
+    // Read user's existing history
+    let userHistory = [];
     try {
-      const data = fs.existsSync(historyPath)
-        ? JSON.parse(fs.readFileSync(historyPath, 'utf-8'))
-        : [];
-      res.json({ history: data });
-    } catch (err) {
-      console.error('Failed to read chat history:', err);
-      res.status(500).json({ error: 'Unable to load chat history' });
+      const data = await fs.readFile(userHistoryPath, 'utf8');
+      userHistory = JSON.parse(data);
+    } catch (error) {
+      // File doesn't exist, start with empty history
     }
+
+    // Add new messages and save
+    const userMessage = { sender: "user", text: message, timestamp: new Date().toISOString(), id: Date.now() };
+    const botMessage = { sender: "bot", text: reply, timestamp: new Date().toISOString(), id: Date.now() + 1 };
+    userHistory.push(userMessage, botMessage);
+    await fs.writeFile(userHistoryPath, JSON.stringify(userHistory, null, 2));
+
+    res.json({ reply });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send message' });
   }
 };
 
-module.exports = chatController;
+exports.getChatHistory = async (req, res) => {
+  try {
+    const userId = req.user.uid;
+    const userHistoryPath = getUserHistoryPath(userId);
+
+    let history = [];
+    try {
+        const data = await fs.readFile(userHistoryPath, 'utf8');
+        history = JSON.parse(data);
+    } catch (error) {
+        // If file doesn't exist, it means no history, which is fine
+    }
+    
+    res.json({ history });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve chat history' });
+  }
+};

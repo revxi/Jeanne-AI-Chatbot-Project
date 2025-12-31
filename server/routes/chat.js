@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const chatController = require('../controllers/chatController');
+const authMiddleware = require('../authMiddleware'); // Import the middleware
 
-// POST /api/chat
-router.post('/chat', chatController.sendMessage);
-// GET /api/chat/history
-router.get('/chat/history', chatController.getChatHistory);
+// Apply the middleware to all routes in this file
+router.use(authMiddleware);
+
+router.post('/', chatController.sendMessage);
+router.get('/history', chatController.getChatHistory);
 
 module.exports = router;
